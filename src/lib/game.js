@@ -1,11 +1,11 @@
-import { createMatrix, deepCopy, deepEqual, getRandomInt, getDifference } from './utils'
-import { Row } from './array'
-import { Array2D } from './array2D'
+import { createMatrix, deepCopy, deepEqual, getRandomInt, getDifference } from './utils';
+import { Row } from './array';
+import { Array2D } from './array2D';
 
 export class Game2048 {
 
   constructor() {
-    this.new()
+    this.new();
   }
 
   init({ score, field, currentMove } = {}) {
@@ -17,11 +17,44 @@ export class Game2048 {
   new() {
     this.story = [];
     this.currentStoreIndex = 0;
-    this.init()
+    this.init();
+    this.field.addNumber();
   }
 
   get isFinished() {
-    return this.field.hasAnyMoves
+    return this.field.hasAnyMoves;
+  }
+
+  get bestMoves() {
+    const up = this.canMove('up');
+    const down = this.canMove('down');
+    const left = this.canMove('left');
+    const right = this.canMove('right');
+
+
+    const lastRow = this.field.getLastRow();
+    const lastRowPossibleMoves = lastRow.possibleMoves;
+    const canLastRowMove = Boolean(lastRowPossibleMoves.length);
+    console.log({ canLastRowMove, lastRow, lastRowPossibleMoves });
+    const result = [];
+
+    if (down) {
+      result.push('down');
+      return result;
+    }
+
+    if (right) {
+      result.push('right');
+      return result;
+    }
+
+    if (left && !canLastRowMove) {
+      result.push('left');
+      return result;
+    }
+
+    return result;
+
   }
 
   saveStateToStore() {
@@ -31,7 +64,7 @@ export class Game2048 {
       field: this.field.value,
     };
 
-    this.story.unshift(JSON.stringify(state)) ;
+    this.story.unshift(JSON.stringify(state));
     const neededStorySize = this.story.length - this.currentStoreIndex;
     this.story = this.story.slice(0, neededStorySize < this.storySize ? neededStorySize : this.storySize);
     this.currentStoreIndex = 0;
@@ -40,11 +73,19 @@ export class Game2048 {
   downloadStateFromStore(moveNumber) {
     const settings = this.story[moveNumber];
     if (settings) {
-      this.init(JSON.parse(settings))
+      this.init(JSON.parse(settings));
     }
   }
 
   move(direction) {
+
+    if (direction === 'best'){
+      direction = this.bestMoves[0]
+    }
+
+    if (!this.canMove(direction)) {
+      return;
+    }
     this.score = this.score + this.field.scoresForMove(direction);
     this.field.move(direction);
     this.field.addNumber();
@@ -56,11 +97,11 @@ export class Game2048 {
   }
 
   scoresForMove(direction) {
-    return this.field.scoresForMove(direction)
+    return this.field.scoresForMove(direction);
   }
 
   undo() {
-    if (this.canUndo()){
+    if (this.canUndo()) {
       this.currentStoreIndex++;
       this.downloadStateFromStore(this.currentStoreIndex);
     }
@@ -71,9 +112,9 @@ export class Game2048 {
   }
 
   next() {
-    if (this.canNext()){
+    if (this.canNext()) {
       this.currentStoreIndex--;
-      this.downloadStateFromStore(this.currentStoreIndex)
+      this.downloadStateFromStore(this.currentStoreIndex);
     }
   }
 

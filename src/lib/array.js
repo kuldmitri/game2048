@@ -57,7 +57,11 @@ export class Row {
   }
 
   canMove(direction) {
-    return this.isEqual(this.moved(direction))
+    return !this.isEqual(this.moved(direction))
+  }
+
+  get possibleMoves (){
+    return ['start', 'end'].filter(direction => this.canMove(direction))
   }
 
   isEqual(row) {
@@ -65,5 +69,3 @@ export class Row {
   }
 }
 
-console.log(new Row([2, 2, 2, 2]).moved('start'));
-console.log(new Row([2, 2, 2, 2]).moved('end'));

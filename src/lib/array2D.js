@@ -1,5 +1,5 @@
-import { createMatrix, deepCopy, deepEqual, getRandomInt, getDifference } from './utils'
-import { Row } from './array'
+import { createMatrix, deepCopy, deepEqual, getRandomInt, getDifference } from './utils';
+import { Row } from './array';
 
 export class Array2D {
 
@@ -8,15 +8,15 @@ export class Array2D {
   }
 
   copy() {
-    return new Array2D(this.value)
+    return new Array2D(this.value);
   }
 
   get width() {
-    return this.value && this.value[0] && this.value[0].length
+    return this.value && this.value[0] && this.value[0].length;
   }
 
   get height() {
-    return this.value && this.value.length
+    return this.value && this.value.length;
   }
 
   walk(cb) {
@@ -26,33 +26,33 @@ export class Array2D {
 
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
-          cb(this.value[i][j], i, j)
+          cb(this.value[i][j], i, j);
         }
       }
     } catch (e) {
       console.error('Error during walking of Array2D');
-      console.error(e)
+      console.error(e);
     }
   }
 
   mapColumns(cb) {
     let result = deepCopy(this.value);
     const getColumn = (i) => {
-      return result.map(e => e[i])
-    }
+      return result.map(e => e[i]);
+    };
 
     const setColumn = (index, value) => {
       result = result.map((e, i) => {
-        e[index] = value[i]
+        e[index] = value[i];
         return e;
-      })
-    }
+      });
+    };
 
     for (let i = 0; i < this.width; i++) {
-      setColumn(i, cb(getColumn(i), i))
+      setColumn(i, cb(getColumn(i), i));
     }
 
-    return result
+    return result;
 
   }
 
@@ -62,7 +62,7 @@ export class Array2D {
 
   moved(direction) {
     if (!['left', 'right', 'up', 'down'].includes(direction)) {
-      return deepCopy(this.value)
+      return deepCopy(this.value);
     }
 
     if (['left', 'right'].includes(direction)) {
@@ -70,8 +70,8 @@ export class Array2D {
         ? 'start'
         : 'end';
       return this.value.map(e => {
-        return new Row(e).move(rowDirection).value
-      })
+        return new Row(e).move(rowDirection).value;
+      });
     }
 
     if (['up', 'down'].includes(direction)) {
@@ -79,8 +79,8 @@ export class Array2D {
         ? 'start'
         : 'end';
       return this.mapColumns((e) => {
-        return new Row(e).move(rowDirection).value
-      })
+        return new Row(e).move(rowDirection).value;
+      });
     }
 
   }
@@ -91,11 +91,19 @@ export class Array2D {
       this.canMove('down'),
       this.canMove('left'),
       this.canMove('right'),
-    ].some(Boolean)
+    ].some(Boolean);
+  }
+
+  get possibleMoves() {
+    return ['up', 'down', 'left', 'right'].filter(direction => this.canMove(direction))
+  }
+
+  getLastRow = () => {
+    return new Row(this.value[this.height - 1])
   }
 
   canMove(direction) {
-    return !deepEqual(this.value, this.moved(direction))
+    return !deepEqual(this.value, this.moved(direction));
   }
 
   scoresForMove(direction) {
@@ -106,15 +114,15 @@ export class Array2D {
     const emptyCells = [];
     this.walk((e, i, j) => {
       if (!e) {
-        emptyCells.push([i, j])
+        emptyCells.push([i, j]);
       }
-    })
+    });
 
     const numberOfVariants = emptyCells.length;
 
     if (numberOfVariants) {
       const randomInt = getRandomInt(numberOfVariants);
-      const [x, y] = emptyCells[randomInt]
+      const [x, y] = emptyCells[randomInt];
       this.value[x][y] = getRandomInt(10) === 0 ? 4 : 2;
     }
 
