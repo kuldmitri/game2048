@@ -38,3 +38,17 @@ code {
   border-radius: 5px;
   font-size: 25px;
 }
+
+.button{
+  width: auto;
+  height: 50px;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  font-size: 25px;
+  flex: 1;
+  background-color: #bbada0;
+  cursor: pointer;
+}
